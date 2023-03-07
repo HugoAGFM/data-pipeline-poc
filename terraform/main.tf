@@ -19,19 +19,11 @@ provider "azurerm" {
   features {}
 }
 
-
-# Resource Groups
-resource "azurerm_resource_group" "data_pipeline_rg" {
-  name     = "data-pipeline-rg"
-  location = "East US 2"
-}
-
-
 # Service Plans
 resource "azurerm_service_plan" "data_pipeline_sp" {
   name                = "data-pipeline-sp"
-  resource_group_name = azurerm_resource_group.data_pipeline_rg.name
-  location            = azurerm_resource_group.data_pipeline_rg.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   os_type             = "Linux"
   sku_name            = "B1"
 }
@@ -40,8 +32,8 @@ resource "azurerm_service_plan" "data_pipeline_sp" {
 # Storage Accounts
 resource "azurerm_storage_account" "data_pipeline_sa" {
   name                     = "datapipelinesa"
-  resource_group_name      = azurerm_resource_group.data_pipeline_rg.name
-  location                 = azurerm_resource_group.data_pipeline_rg.location
+  resource_group_name      = var.resource_group_name
+  location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
@@ -70,8 +62,8 @@ resource "azurerm_storage_container" "data_piepline_processed" {
 # Function Apps
 resource "azurerm_linux_function_app" "data_pipeline_linux_fa" {
   name                = "data-pipeline-linux-fa"
-  resource_group_name = azurerm_resource_group.data_pipeline_rg.name
-  location            = azurerm_resource_group.data_pipeline_rg.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
 
   storage_account_name       = azurerm_storage_account.data_pipeline_sa.name
   storage_account_access_key = azurerm_storage_account.data_pipeline_sa.primary_access_key
